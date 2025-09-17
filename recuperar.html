@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restablecer Contraseña - SIDCDI</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('img/inventario.png') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+    }
+
+    .navbar {
+      background-color: rgba(30, 30, 47, 0.9);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar h2 {
+      margin: 0;
+    }
+
+    .navbar a {
+      color: white;
+      margin-left: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      margin: 4rem auto;
+    }
+
+    .container h1 {
+      margin-bottom: 1.5rem;
+      color: #1e1e2f;
+    }
+
+    .container input {
+      width: 100%;
+      padding: 0.7rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .container button {
+      width: 100%;
+      padding: 0.7rem;
+      background-color: #1e1e2f;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .container button:hover {
+      background-color: #33334d;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h2>SIDCDI</h2>
+    <div>
+      <a href="index.html">Inicio</a>
+      <a href="login.html">Login</a>
+      <a href="register.html">Registro</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Restablecer Contraseña</h1>
+    <form id="resetForm">
+      <input type="password" id="nuevaContrasena" placeholder="Nueva contraseña" required />
+      <input type="password" id="confirmarContrasena" placeholder="Confirmar contraseña" required />
+      <button type="submit">Restablecer</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.pathname.split('/'));
+    const token = window.location.pathname.split('/').pop();
+
+    document.getElementById('resetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nuevaContrasena = document.getElementById('nuevaContrasena').value;
+      const confirmarContrasena = document.getElementById('confirmarContrasena').value;
+
+      if (nuevaContrasena !== confirmarContrasena) {
+        Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/auth/reset-password/${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nuevaContrasena })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.msg || 'Error al restablecer la contraseña');
+
+        Swal.fire('Contraseña actualizada', 'Ya puedes iniciar sesión con tu nueva contraseña', 'success')
+          .then(() => window.location.href = 'login.html');
+      } catch (error) {
+        Swal.fire('Error', error.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>
+

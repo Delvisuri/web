@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registrar Producto - SIDCDI</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('img/inventario.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #1c5d89;
+    }
+
+    .mensaje {
+      text-align: center;
+      margin-top: 15px;
+      color: green;
+      font-weight: bold;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Registrar Producto</h2>
+    <form id="productoForm" action="crear_producto.php" method="POST">
+      <label for="nombre">Nombre del producto:</label>
+      <input type="text" id="nombre" name="nombre" required />
+
+      <label for="descripcion">Descripción:</label>
+      <input type="text" id="descripcion" name="descripcion" required />
+
+      <label for="cantidad">Cantidad:</label>
+      <input type="number" id="cantidad" name="cantidad" required min="1" />
+
+      <label for="precio">Precio:</label>
+      <input type="number" id="precio" name="precio" required step="0.01" min="0" />
+
+      <button type="submit">Guardar Producto</button>
+    </form>
+    <div id="mensaje" class="mensaje"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('productoForm');
+    const mensaje = document.getElementById('mensaje');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('crear_producto.php', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const text = await response.text();
+        mensaje.innerHTML = text.includes("correctamente") 
+          ? `<span>${text}</span>` 
+          : `<span class="error">${text}</span>`;
+
+        if (text.includes("correctamente")) form.reset();
+      } catch (error) {
+        mensaje.innerHTML = '<span class="error">Error al enviar el formulario.</span>';
+      }
+    });
+  </script>
+</body>
+</html>
